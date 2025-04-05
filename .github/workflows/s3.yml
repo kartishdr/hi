@@ -25,4 +25,4 @@ jobs:
       # Step 3: Upload file to S3
       - name: Upload file to S3
         run: |
-          aws s3 cp ./home/anu/Desktop/hi.txt s3://anubhello.123/Buckets/anubhello.123/
+          aws s3 cp /home/anu/Desktop/hi.txt s3://Buckets/anubhello.123/
