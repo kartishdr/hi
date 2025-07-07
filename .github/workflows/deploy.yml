@@ -36,21 +36,21 @@ jobs:
       - name: Run tests with coverage
         run: npm run test
 
-   #- name: Install SonarScanner
-   #     run: |
-         wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+      - name: Install SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip sonar-scanner-cli-5.0.1.3006-linux.zip
           mv sonar-scanner-5.0.1.3006-linux sonar-scanner
           echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
 
-    #  - name: Run SonarScanner
+      - name: Run SonarScanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #    run: |
+        run: |
           sonar-scanner \
             -Dsonar.projectKey=my-react-app \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://50.16.118.212:9000 \
+            -Dsonar.host.url=http://54.145.45.148:9000 \
             -Dsonar.login=$SONAR_TOKEN
 
   deploy:
@@ -96,3 +96,4 @@ jobs:
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
             --task-definition ${{ env.TASK_DEF_ARN }}
+
