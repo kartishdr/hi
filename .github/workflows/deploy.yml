@@ -67,6 +67,17 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+       
+       
+      - name: Ensure ECR repository exists
+        run: |
+         aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION \
+         || aws ecr create-repository --repository-name $ECR_REPOSITORY --region $AWS_REGION
+
+      - name: Ensure ECS cluster exists
+        run: |
+         aws ecs describe-clusters --clusters $ECS_CLUSTER --region $AWS_REGION \
+         || aws ecs create-cluster --cluster-name $ECS_CLUSTER --region $AWS_REGION
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
