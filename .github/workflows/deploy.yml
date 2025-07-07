@@ -1,8 +1,10 @@
-name: Build and Deploy to ECS
+name: CI, Analyze, and Deploy
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  pull_request:
 
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -11,7 +13,48 @@ env:
   ECS_SERVICE: ${{ secrets.ECS_SERVICE_NAME }}
 
 jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests with coverage
+        run: npm run test
+
+      - name: Install SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner-cli-5.0.1.3006-linux.zip
+          mv sonar-scanner-5.0.1.3006-linux sonar-scanner
+          echo "$(pwd)/sonar-scanner/bin" >> $GITHUB_PATH
+
+      - name: Run SonarScanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=my-react-app \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://50.16.118.212:9000 \
+            -Dsonar.login=$SONAR_TOKEN
+
   deploy:
+    needs: build-and-analyze
     runs-on: ubuntu-latest
 
     steps:
