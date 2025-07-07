@@ -1,3 +1,11 @@
+# Stage 2: Serve with NGINX
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Optional: expose coverage files for mounting/exporting
+COPY --from=builder /app/coverage /coverage
+
+
 # Use the official NGINX base image
 FROM nginx:alpine
 
