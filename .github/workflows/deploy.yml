@@ -9,8 +9,8 @@ on:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  ECS_CLUSTER: ${{ secrets.ECS_CLUSTER_NAME }}
-  ECS_SERVICE: ${{ secrets.ECS_SERVICE_NAME }}
+  ECS_CLUSTER: mycluster
+  ECS_SERVICE: myservice
 
 jobs:
   build-and-analyze:
@@ -81,7 +81,6 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-
       - name: Build, tag, and push Docker image to ECR
         run: |
           IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
@@ -92,7 +91,7 @@ jobs:
 
       - name: Fill in the new image ID in the ECS task definition
         run: |
-          sed "s|<IMAGE_URI>|${{ env.IMAGE_URI }}|g" ecs-task-def-template.json > ecs-task-def.json
+          sed "s|<IMAGE_URI>|$IMAGE_URI|g" ecs-task-def-template.json > ecs-task-def.json
 
       - name: Register new task definition
         run: |
@@ -106,5 +105,6 @@ jobs:
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
             --service $ECS_SERVICE \
-            --task-definition ${{ env.TASK_DEF_ARN }}
+            --task-definition $TASK_DEF_ARN
+
 
