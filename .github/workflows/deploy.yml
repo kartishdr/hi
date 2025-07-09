@@ -73,6 +73,13 @@ jobs:
         run: |
          aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION \
          || aws ecr create-repository --repository-name $ECR_REPOSITORY --region $AWS_REGION
+
+      - name: Ensure ECS cluster exists and is active
+        run: |
+         aws ecs describe-clusters --clusters $ECS_CLUSTER --region $AWS_REGION \
+         | grep -q '"status": "ACTIVE"' \
+         || aws ecs create-cluster --cluster-name $ECS_CLUSTER --region $AWS_REGION
+
          
       - name: Create ECS service (only first time)
         run: |
@@ -85,11 +92,6 @@ jobs:
          --network-configuration "awsvpcConfiguration={subnets=[subnet-0ff62befe5aed37e9],securityGroups=[sg-0061c8d63b949fdbc],assignPublicIp=ENABLED}" \
           --region $AWS_REGION
 
-
-      - name: Ensure ECS cluster exists
-        run: |
-         aws ecs describe-clusters --clusters $ECS_CLUSTER --region $AWS_REGION \
-         || aws ecs create-cluster --cluster-name $ECS_CLUSTER --region $AWS_REGION
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
