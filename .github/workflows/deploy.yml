@@ -50,7 +50,7 @@ jobs:
           sonar-scanner \
             -Dsonar.projectKey=my-react-app \
             -Dsonar.sources=. \
-            -Dsonar.host.url=http://52.87.185.39:9000 \
+            -Dsonar.host.url=http://3.92.58.44:9000 \
             -Dsonar.login=$SONAR_TOKEN
 
   deploy:
