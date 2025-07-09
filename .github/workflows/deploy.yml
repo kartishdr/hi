@@ -73,6 +73,15 @@ jobs:
         run: |
          aws ecr describe-repositories --repository-names $ECR_REPOSITORY --region $AWS_REGION \
          || aws ecr create-repository --repository-name $ECR_REPOSITORY --region $AWS_REGION
+         
+          aws ecs create-service \
+         --cluster mycluster \
+         --service-name myservice \
+         --task-definition nginx-task \
+           --desired-count 1 \
+          --launch-type FARGATE \
+          --network-configuration '...'
+
 
       - name: Ensure ECS cluster exists
         run: |
